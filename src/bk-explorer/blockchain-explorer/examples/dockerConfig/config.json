@@ -1,0 +1,110 @@
+{
+  "network-configs": {
+    "network-1": {
+      "version": "1.0",
+      "clients": {
+        "client-1": {
+          "tlsEnable": true,
+          "organization": "Org1MSP",
+          "channel": "mychannel",
+          "credentialStore": {
+            "path": "./tmp/credentialStore_Org1/credential",
+            "cryptoStore": {
+              "path": "./tmp/credentialStore_Org1/crypto"
+            }
+          }
+        }
+      },
+      "channels": {
+        "mychannel": {
+          "peers": {
+            "peer0.org1": {}
+          },
+          "connection": {
+            "timeout": {
+              "peer": {
+                "endorser": "6000",
+                "eventHub": "6000",
+                "eventReg": "6000"
+              }
+            }
+          }
+        }
+      },
+      "organizations": {
+        "Org1MSP": {
+          "mspid": "Org1MSP",
+          "fullpath": false,
+          "adminPrivateKey": {
+            "path":
+              "/data/hyperledger-fabric/src/driving-files/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/keystore"
+          },
+          "signedCert": {
+            "path":
+              "/data/hyperledger-fabric/src/driving-files/crypto-config/peerOrganizations/org1/users/Admin@org1/msp/signcerts"
+          }
+        },
+        "Org2MSP": {
+          "mspid": "Org2MSP",
+          "adminPrivateKey": {
+            "path":
+              "/data/hyperledger-fabric/src/driving-files/crypto-config/peerOrganizations/org2/users/Admin@org2/msp/keystore"
+          },
+          "signedCert": {
+            "path":
+              "/data/hyperledger-fabric/src/driving-files/crypto-config/peerOrganizations/org2/users/Admin@org2/msp/signcerts"
+          }
+        },
+        "Orderer1MSP": {
+          "mspid": "Orderer1MSP",
+          "adminPrivateKey": {
+            "path":
+              "/data/hyperledger-fabric/src/driving-files/crypto-config/ordererOrganizations/orgorderer/users/Admin@orgorderer/msp/keystore"
+          }
+        },
+        "Orderer2MSP": {
+          "mspid": "Orderer2MSP",
+          "adminPrivateKey": {
+            "path":
+              "/data/hyperledger-fabric/src/driving-files/crypto-config/ordererOrganizations/orgorderer/users/Admin@orgorderer/msp/keystore"
+          }
+        }
+      },
+      "peers": {
+        "peer0.org1": {
+          "tlsCACerts": {
+            "path":
+              "/data/hyperledger-fabric/src/driving-files/crypto-config/peerOrganizations/org1/peers/peer0.org1/tls/ca.crt"
+          },
+          "url": "grpcs://localhost:30501",
+          "eventUrl": "grpcs://localhost:3053",
+          "grpcOptions": {
+            "ssl-target-name-override": "peer0.org1"
+          }
+        },
+        "peer0.org2": {
+          "tlsCACerts": {
+            "path":
+              "/data/hyperledger-fabric/src/driving-files/crypto-config/peerOrganizations/org2/peers/peer0.org2/tls/ca.crt"
+          },
+          "url": "grpcs://localhost:30601",
+          "eventUrl": "grpcs://localhost:30603",
+          "grpcOptions": {
+            "ssl-target-name-override": "peer0.org2"
+          }
+        }
+      },
+      "orderers": {
+        "orderer0.orgorderer": {
+          "url": "grpcs://localhost:32000"
+        },
+        "orderer1.orgorderer": {
+          "url": "grpcs://localhost:32001"
+        }
+      }
+    },
+    "network-2": {}
+  },
+  "configtxgenToolPath": "data/hyperledger-fabric/src/bin",
+  "license": "Apache-2.0"
+}
