@@ -67,7 +67,7 @@ function config(){
 	fi
 	docker_network_name="fabric-explorer-net"
 	# Default Hyperledger Explorer Database Credentials.
-	explorer_db_user="hppoc"
+	explorer_db_user="postgres"
 	explorer_db_pwd="password"
 	explorer_db_name="fabricexplorer"
 	#configure explorer to connect to specific Blockchain network using given configuration
