@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: kafka
+  name: zookeeper0-kafka
+spec:
+  selector:
+    matchLabels:
+      app: hyperledger
+      role: zookeeper
+      zookeeper-id: zookeeper0
+      ns: kafka
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hyperledger
+        role: zookeeper
+        zookeeper-id: zookeeper0
+        ns: kafka
+    spec:      
+      terminationGracePeriodSeconds: 120
+      nodeSelector:
+        kubernetes.io/hostname: ip-172-31-33-106
+      containers:
+        - name: zookeeper0-kafka
+          image: hyperledger/fabric-zookeeper:x86_64-0.4.6
+          env:
+            - name: ZOO_MY_ID
+              value: "1"
+            - name: ZOO_SERVERS
+              value: "server.1=0.0.0.0:2888:3888 server.2=zookeeper1.kafka:2888:3888 server.3=zookeeper2.kafka:2888:3888"
+            - name: ZOO_TICK_TIME
+              value: "2000"
+            - name: ZOO_INIT_LIMIT
+              value: "5"
+            - name: ZOO_SYNC_LIMIT
+              value: "2"
+          volumeMounts:
+            - mountPath: /datalog
+              name: datalog
+            - mountPath: /data
+              name: data
+          lifecycle:
+            preStop:
+              exec:
+                # SIGTERM triggers a quick exit; gracefully terminate instead
+                command: ["zkServer.sh", "stop"]
+      volumes:
+        - name: datalog
+          hostPath:
+              # path: /kafka/zk_log/zookeeper0
+              path: /data/kafka/zk_log/zookeeper0
+        - name: data
+          hostPath:
+              # path: /kafka/zk_data/zookeeper0
+              path: /data/kafka/zk_data/zookeeper0
+---
+apiVersion: v1
+kind: Service
+metadata:
+   namespace: kafka
+   name: zookeeper0
+spec:
+ selector:
+   app: hyperledger
+   role: zookeeper
+   zookeeper-id: zookeeper0
+   ns: kafka
+ clusterIP: None
+ ports:
+   - name: zookeeper-port1
+     protocol: TCP
+     port: 2888
+     # nodePort: 32751
+   - name: zookeeper-port2
+     protocol: TCP
+     port: 3888
+     # nodePort: 32752
+   - name: zookeeper-port3
+     protocol: TCP
+     port: 2181
+     # nodePort: 32753

@@ -1,0 +1,92 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: orgorderer
+  name: orderer0
+spec:
+  selector:
+    matchLabels:
+      app: hyperledger
+      org: orgorderer
+      orderer-id: orderer0
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hyperledger
+        org: orgorderer
+        orderer-id: orderer0
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/hostname: ip-172-31-33-147
+      containers:
+        - name: orderer0
+          # imagePullPolicy: Never
+          image: hyperledger/fabric-orderer:x86_64-1.1.0
+          volumeMounts:
+            - mountPath: /var/hyperledger/orderer/msp
+              name: certificate
+            - mountPath: /var/hyperledger/orderer/tls
+              name: tlscertificate
+            - mountPath: /var/hyperledger/orderer/orderer.genesis.block
+              name: genesis
+          env:
+            - name: ORDERER_GENERAL_LOGLEVEL
+              value: "DEBUG"
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_GENESISMETHOD
+              value: "file"
+            - name: ORDERER_GENERAL_GENESISFILE
+              value: "/var/hyperledger/orderer/orderer.genesis.block"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: OrgordererMSP
+            - name: ORDERER_GENERAL_LOCALMSPDIR
+              value: "/var/hyperledger/orderer/msp"
+            - name: ORDERER_GENERAL_LEDGERTYPE
+              value: "file"
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: "/var/hyperledger/orderer/tls/server.key"
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: "/var/hyperledger/orderer/tls/server.crt"
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: "[/var/hyperledger/orderer/tls/ca.crt]"
+            - name: GODEBUG
+              value: "netdns=go"
+          ports:
+            - containerPort: 7050
+          command:
+            - orderer
+            - start
+      volumes:
+        - name: certificate
+          hostPath:
+            path: /data/driving-files/crypto-config/ordererOrganizations/orgorderer/orderers/orderer0.orgorderer/msp
+        - name: tlscertificate
+          hostPath:
+            path: /data/driving-files/crypto-config/ordererOrganizations/orgorderer/orderers/orderer0.orgorderer/tls
+        - name: genesis
+          hostPath:
+            path: /data/driving-files/channel-artifacts/genesis.block
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer0
+  namespace: orgorderer
+spec:
+  type: NodePort
+#  type: ClusterIP
+  ports:
+    - name: "orderer"
+      protocol: TCP
+      targetPort: 7050
+      port: 7050
+      nodePort: 32000
+  selector:
+    app: hyperledger
+    org: orgorderer
+    orderer-id: orderer0

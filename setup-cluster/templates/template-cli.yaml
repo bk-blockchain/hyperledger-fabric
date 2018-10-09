@@ -1,0 +1,74 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: ${namespace}
+  name: ${podName}
+spec:
+  selector:
+    matchLabels:
+      app: cli
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cli
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/hostname: ${hostname}
+      containers:
+        - name: ${podName}
+          imagePullPolicy: IfNotPresent
+          image: hyperledger/fabric-tools:${version}
+          workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+          volumeMounts:
+            - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+              name: crypto
+            - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+              name: scripts
+            - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+              name: channel-artifacts
+            - mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/chaincode
+              name: chaincode
+            - mountPath: /var/run/docker.sock
+              name: docker-sock
+              readOnly: false
+          env:
+            - name: CORE_VM_ENDPOINT
+              value: unix:///var/run/docker.sock
+            - name: CORE_PEER_ID
+              value: ${corePeerID}
+            - name: CORE_LOGGING_LEVEL
+              value: DEBUG
+            - name: CORE_PEER_ADDRESS
+              value: ${peerAddress}
+            - name: CORE_PEER_LOCALMSPID
+              value: ${mspid}
+            - name: CORE_PEER_TLS_ENABLED
+              value: "${tlsEnabled}"
+            - name: CORE_PEER_TLS_CERT_FILE
+              value: "/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/${namespace}/peers/peer0.${namespace}/tls/server.crt"
+            - name: CORE_PEER_TLS_KEY_FILE
+              value: "/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/${namespace}/peers/peer0.${namespace}/tls/server.key"
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: "/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/${namespace}/peers/peer0.${namespace}/tls/ca.crt"
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: "/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/${namespace}/users/Admin@${namespace}/msp"
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "while true; do sleep 30; done;" ]
+      volumes:
+        - name: crypto
+          hostPath:
+            path: /data/driving-files/crypto-config
+        - name: scripts
+          hostPath:
+            path: /data/driving-files/scripts
+        - name: channel-artifacts
+          hostPath:
+            path: /data/driving-files/channel-artifacts
+        - name: chaincode
+          hostPath:
+            path: /data/chaincode
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock

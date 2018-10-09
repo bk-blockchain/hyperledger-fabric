@@ -1,0 +1,92 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: ${namespace}
+  name: ${podName}
+spec:
+  selector:
+    matchLabels:
+      app: hyperledger
+      org: ${namespace}
+      orderer-id: ${ordererID}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hyperledger
+        org: ${namespace}
+        orderer-id: ${ordererID}
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/hostname: ${hostname}
+      containers:
+        - name: ${podName}
+          # imagePullPolicy: Never
+          image: hyperledger/fabric-orderer:${version}
+          volumeMounts:
+            - mountPath: /var/hyperledger/orderer/msp
+              name: certificate
+            - mountPath: /var/hyperledger/orderer/tls
+              name: tlscertificate
+            - mountPath: /var/hyperledger/orderer/orderer.genesis.block
+              name: genesis
+          env:
+            - name: ORDERER_GENERAL_LOGLEVEL
+              value: "DEBUG"
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_GENESISMETHOD
+              value: "file"
+            - name: ORDERER_GENERAL_GENESISFILE
+              value: "/var/hyperledger/orderer/orderer.genesis.block"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: ${localMSPID}
+            - name: ORDERER_GENERAL_LOCALMSPDIR
+              value: "/var/hyperledger/orderer/msp"
+            - name: ORDERER_GENERAL_LEDGERTYPE
+              value: "file"
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "${tlsEnabled}"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: "/var/hyperledger/orderer/tls/server.key"
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: "/var/hyperledger/orderer/tls/server.crt"
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: "[/var/hyperledger/orderer/tls/ca.crt]"
+            - name: GODEBUG
+              value: "netdns=go"
+          ports:
+            - containerPort: 7050
+          command:
+            - orderer
+            - start
+      volumes:
+        - name: certificate
+          hostPath:
+            path: ${path}/msp
+        - name: tlscertificate
+          hostPath:
+            path: ${path}/tls
+        - name: genesis
+          hostPath:
+            path: ${genesis}/genesis.block
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${podName}
+  namespace: ${namespace}
+spec:
+  type: NodePort
+#  type: ClusterIP
+  ports:
+    - name: "orderer"
+      protocol: TCP
+      targetPort: 7050
+      port: 7050
+      nodePort: ${nodePort}
+  selector:
+    app: hyperledger
+    org: ${namespace}
+    orderer-id: ${ordererID}

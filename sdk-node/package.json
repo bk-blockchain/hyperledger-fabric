@@ -1,0 +1,26 @@
+{
+    "name": "swiping-card-4-peers",
+    "version": "1.0.0",
+    "description": "HPC swiping cards Sample Application",
+    "main": "swiping-card.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "commander": "^2.16.0",
+        "express": "^4.16.3",
+        "fabric-ca-client": "^1.2.1",
+        "fabric-client": "^1.2.1",
+        "grpc": "^1.6.0",
+        "system-sleep": "^1.3.6",
+        "x509": "^0.3.3"
+    },
+    "author": "Nghiadt",
+    "keywords": [
+        "Hyperledger",
+        "Fabric",
+        "Swipe card 4 peers",
+        "Sample",
+        "Application"
+    ]
+}

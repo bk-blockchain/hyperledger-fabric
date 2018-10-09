@@ -1,0 +1,71 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: org1
+  name: ca
+spec:
+  selector:
+    matchLabels:
+      app: hyperledger
+      role: ca
+      name: ca
+      org: org1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hyperledger
+        role: ca
+        name: ca
+        org: org1
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/hostname: ip-172-31-33-147
+      containers:
+        - name: ca
+          # imagePullPolicy: Never
+          image: hyperledger/fabric-ca:x86_64-1.1.0
+          env:
+          - name:  FABRIC_CA_HOME
+            value: /etc/hyperledger/fabric-ca-server
+          - name:  FABRIC_CA_SERVER_CA_NAME
+            value: ca
+          - name:  FABRIC_CA_SERVER_TLS_ENABLED
+            value: "true"
+          
+          - name:  FABRIC_CA_SERVER_TLS_CERTFILE
+            value: /etc/hyperledger/fabric-ca-server-config/ca.org1-cert.pem
+          - name:  FABRIC_CA_SERVER_TLS_KEYFILE
+            value: /etc/hyperledger/fabric-ca-server-config/ee4f7ca0b983d777ea06d7391d28d49c681c123d41fbea50f95a4a6690574c18_sk
+          
+          ports:
+          - containerPort: 7054
+          command: ["sh"]
+          args:  ["-c", " fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/ee4f7ca0b983d777ea06d7391d28d49c681c123d41fbea50f95a4a6690574c18_sk -b admin:adminpw -d "]
+          volumeMounts:
+          - mountPath: /etc/hyperledger/fabric-ca-server-config
+            name: certificate
+      volumes:
+        - name: certificate
+          hostPath:
+            path: /data/driving-files/crypto-config/peerOrganizations/org1/ca/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ca
+  namespace: org1
+spec:
+  type: NodePort
+  ports:
+    - name: "ca"
+      protocol: TCP
+      port: 7054
+      targetPort: 7054
+      nodePort: 30500
+  selector:
+    app: hyperledger
+    role: ca
+    name: ca
+    org: org1

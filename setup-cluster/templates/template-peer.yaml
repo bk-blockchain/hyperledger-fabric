@@ -1,0 +1,145 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: ${namespace}
+  name:	${podName}
+spec:
+  selector:
+    matchLabels:
+      app: hyperledger
+      role: peer
+      peer-id: ${peerID}
+      org: ${namespace}
+  replicas: 1
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hyperledger
+        role: peer
+        peer-id: ${peerID}
+        org: ${namespace}
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/hostname: ${hostname}
+      containers:
+        - name: couchdb
+          image: hyperledger/fabric-couchdb:${dbVersion}
+          ports:
+          - containerPort: 5984
+
+        - name: ${podName}
+          imagePullPolicy: IfNotPresent
+          image: hyperledger/fabric-peer:${version}
+          workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+          volumeMounts:
+            - mountPath: /etc/hyperledger/fabric/msp
+              name: certificate
+            - mountPath: /etc/hyperledger/fabric/tls
+              name: tlscertificate
+            - mountPath: /host/var/run/docker.sock
+              name: docker-sock
+          env:
+            - name: CORE_LEDGER_STATE_STATEDATABASE
+              value: "CouchDB"
+              #value: "LevelDB"
+            - name: CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS
+              value: "localhost:5984"
+              # value: "${peerID}-couchdb.${namespace}:5984"
+            - name: CORE_VM_ENDPOINT
+              value: unix:///host/var/run/docker.sock
+            - name: CORE_PEER_ID
+              value: ${corePeerID}
+            - name: CORE_PEER_ADDRESS
+              value: ${peerAddress}
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: ${peerGossip}
+            - name: CORE_PEER_GOSSIP_BOOTSTRAP
+              value: ${peerAddress}
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: ${peerCCAddress}
+            - name: CORE_PEER_LOCALMSPID
+              value: ${localMSPID}
+            - name: CORE_PEER_GOSSIP_ORGLEADER
+              value: "false"
+            - name: CORE_LOGGING_LEVEL
+              value: "DEBUG"
+            - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
+              value: "bridge"
+            - name: CORE_PEER_GOSSIP_USELEADERELECTION
+              value: "true"
+            - name: CORE_PEER_GOSSIP_ORGLEADER
+              value: "false"
+            - name: CORE_PEER_GOSSIP_SKIPHANDSHAKE
+              value: "true"
+            - name: CORE_PEER_PROFILE_ENABLED
+              value: "true"
+            - name: CORE_PEER_TLS_ENABLED
+              value: "${tlsEnabled}"
+            - name: CORE_PEER_TLS_CERT_FILE
+              value: "/etc/hyperledger/fabric/tls/server.crt"
+            - name: CORE_PEER_TLS_KEY_FILE
+              value: "/etc/hyperledger/fabric/tls/server.key"
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: "/etc/hyperledger/fabric/tls/ca.crt"
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: /etc/hyperledger/fabric/msp
+            - name: CORE_PEER_TLS_SERVERHOSTOVERRIDE # The server name use this name to verify the hostname returned by TLS handshake
+              value: ${corePeerID}
+            - name: CORE_PEER_ADDRESSAUTODETECT # PEER exposes its dynamic IP
+              value: "true"
+            - name: GODEBUG
+              value: "netdns=go"
+          ports:
+            - containerPort: 7051
+            - containerPort: 7052
+            - containerPort: 7053
+          command: ["/bin/bash", "-c", "--"]
+          args: ["sleep 5; peer node ${peerCmd}"]
+      volumes:
+        - name: certificate
+          hostPath:
+            path: ${path}/msp
+        - name: tlscertificate
+          hostPath:
+            path: ${path}/tls
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ${namespace}
+  name: ${peerID}
+spec:
+  type: NodePort
+  ports:
+    - name: "external-listen-endpoint"
+      protocol: TCP
+      targetPort: 7051
+      port: 7051
+      nodePort: ${nodePort1}
+
+    - name: "chaincode-listen-address"
+      targetPort: 7052
+      port: 7052
+      nodePort: ${nodePort2}
+
+    - name: "listen"
+      targetPort: 7053
+      port: 7053
+      nodePort: ${nodePort3}
+
+    - name: "database-port"
+      protocol: TCP
+      targetPort: 5984
+      port: 5984
+      nodePort: ${nodePort4}
+
+  selector:
+    app: hyperledger
+    role: peer
+    peer-id: ${peerID}
+    org: ${namespace}
