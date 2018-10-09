@@ -23,7 +23,6 @@ program
         (val, memo) => memo.push(val) && memo,
         []
     )
-    .option("-l, --loop []", "Loop", "8")
     .parse(process.argv);
 
 
@@ -37,17 +36,17 @@ const config = Object.assign({}, defaultConfig, {
 // console.log("Config:", config);
 
 var controller = require("./controller")(config);
-var numLoop = program.loop;
+var numLoop = 8;
 var request = {
     //targets: let default to the peer assigned to the client
     chaincodeId: program.chaincode,
     fcn: program.method,
     args: program.arguments
 };
-var timeWait = 125;
+var timeWait = 1000 / numLoop;
 invoke();
 async function invoke() {
-    for (var i = 0; i < 2 * numLoop; i++) {
+    for (var i = 0; i < numLoop; i++) {
         await setTimeout(function () {
             program.arguments[0] = program.arguments[0] + "a";
             getTimer(request);
