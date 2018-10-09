@@ -67,10 +67,10 @@ function getTimeInvoke(request, start) {
     controller
         .invoke(program.user, request, start)
         .then(results => {
-            // console.log(
-            //     "Send transaction promise and event listener promise have completed",
-            //     results
-            // );
+            console.log(
+                "Send transaction promise and event listener promise have completed",
+                results
+            );
         })
         .catch(err => {
             console.error(err);
