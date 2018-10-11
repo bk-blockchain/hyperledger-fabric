@@ -5,9 +5,9 @@ let ordererPem = fs.readFileSync('/data/hyperledger-fabric/src/driving-files/cry
 module.exports = {
     PEER_PEM: peerPem,
     ORDERER_PEM: ordererPem,
-    ORDERER_DOMAIN: "orderer0.orgorderer",
+    ORDERER_DOMAIN: "orderer1.orgorderer",
     PEER_DOMAIN: "peer0.org1",
     TLS_ENABLED: "true",
     MSPID: "Org1MSP",
-    CA_SERVER_NAME: "ca.org1"
+    CA_SERVER_NAME: "ca"
 };

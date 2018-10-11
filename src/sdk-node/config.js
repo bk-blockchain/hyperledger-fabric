@@ -1,15 +1,15 @@
 var defaultVars = require("./defaultVars");
 module.exports = {
-    peerHost: process.env.PEER_HOST || "localhost:7051",
-    eventHost: process.env.EVENT_HOST || "localhost:7053",
-    ordererHost: process.env.ORDERER_HOST || "localhost:7050",
+    peerHost: process.env.PEER_HOST || "localhost:30501",
+    eventHost: process.env.EVENT_HOST || "localhost:30503",
+    ordererHost: process.env.ORDERER_HOST || "localhost:32001",
     ordererDomain: process.env.ORDERER_DOMAIN || defaultVars.ORDERER_DOMAIN,
     peerDomain: process.env.PEER_DOMAIN || defaultVars.PEER_DOMAIN,
     caServer:
     process.env.CA_HOST ||
     (process.env.NAMESPACE
-        ? "ca." + process.env.NAMESPACE + ":7054"
-        : "localhost:7054"),
+        ? "ca." + process.env.NAMESPACE + ":30500"
+        : "localhost:30500"),
     caServerName: process.env.CA_SERVER_NAME || defaultVars.CA_SERVER_NAME,
     mspID: process.env.MSPID || defaultVars.MSPID,
     anotherUserSecret: "adminpw",
