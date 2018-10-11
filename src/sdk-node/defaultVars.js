@@ -1,7 +1,7 @@
 
 var fs = require('fs');
-let peerPem = fs.readFileSync('/data/driving-files/crypto-config/peerOrganizations/org1/peers/peer0.org1/tls/ca.crt');
-let ordererPem = fs.readFileSync('/data/driving-files/crypto-config/ordererOrganizations/orgorderer/orderers/orderer0.orgorderer/tls/ca.crt');
+let peerPem = fs.readFileSync('/data/hyperledger-fabric/src/driving-files/crypto-config/peerOrganizations/org1/peers/peer0.org1/tls/ca.crt');
+let ordererPem = fs.readFileSync('/data/hyperledger-fabric/src/driving-files/crypto-config/ordererOrganizations/orgorderer/orderers/orderer0.orgorderer/tls/ca.crt');
 module.exports = {
     PEER_PEM: peerPem,
     ORDERER_PEM: ordererPem,
