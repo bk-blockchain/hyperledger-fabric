@@ -47,16 +47,16 @@ kubectl delete -f setup-cluster/render/org1-cli.yaml -f setup-cluster/render/org
 
 echo "Delete old configs"
 
-sudo rm /data/driving-files/channel-artifacts/*
-sudo rm -rf /data/driving-files/crypto-config/
-sudo rm -rf /data/kafka/*
-rm /data/setup-cluster/render/*
+sudo rm driving-files/channel-artifacts/*
+sudo rm -rf driving-files/crypto-config/
+sudo rm -rf kafka/*
+rm setup-cluster/render/*
 
 PEERS=(172.31.33.147   172.31.40.239)
 for PEER in "${PEERS[@]}"; do
-    ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm /data/driving-files/channel-artifacts/*'
-    ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm -rf /data/driving-files/crypto-config/'
-    ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm -rf /data/kafka/*'
+    ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm /data/hyperledger-fabric/src/driving-files/channel-artifacts/*'
+    ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm -rf /data/hyperledger-fabric/src/driving-files/crypto-config/'
+    ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm -rf /data/hyperledger-fabric/src/kafka/*'
 done
 
 echo "Remove chaincode images"
