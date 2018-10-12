@@ -54,7 +54,7 @@ rm setup-cluster/render/*
 
 PEERS=(172.31.33.147   172.31.40.239)
 for PEER in "${PEERS[@]}"; do
-    ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm /data/hyperledger-fabric/src/driving-files/channel-artifacts/*'
+    ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm -rf /data/hyperledger-fabric/src/driving-files/channel-artifacts/*'
     ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm -rf /data/hyperledger-fabric/src/driving-files/crypto-config/'
     ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm -rf /data/hyperledger-fabric/src/kafka/*'
 done
