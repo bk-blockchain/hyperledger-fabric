@@ -71,7 +71,7 @@ spec:
       volumes:
         - name: data
           hostPath:
-              path: /data/kafka/data/${kafkaID}
+              path: /data/hyperledger-fabric/src/kafka/data/${kafkaID}
 ---
 apiVersion: v1
 kind: Service

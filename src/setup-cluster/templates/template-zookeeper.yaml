@@ -52,11 +52,11 @@ spec:
         - name: datalog
           hostPath:
               # path: ${shareFolder}/kafka/zk_log/${zookeeperID}
-              path: /data/kafka/zk_log/${zookeeperID}
+              path: /data/hyperledger-fabric/src/kafka/zk_log/${zookeeperID}
         - name: data
           hostPath:
               # path: ${shareFolder}/kafka/zk_data/${zookeeperID}
-              path: /data/kafka/zk_data/${zookeeperID}
+              path: /data/hyperledger-fabric/src/kafka/zk_data/${zookeeperID}
 ---
 apiVersion: v1
 kind: Service

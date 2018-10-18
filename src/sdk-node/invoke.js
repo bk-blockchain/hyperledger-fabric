@@ -37,7 +37,7 @@ const config = Object.assign({}, defaultConfig, {
 });
 
 var controller = require("./controller")(config);
-var numLoop = 8;
+var numLoop = 4;
 var request = {
     //targets: let default to the peer assigned to the client
     chaincodeId: program.chaincode,
