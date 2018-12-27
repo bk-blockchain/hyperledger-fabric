@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -87,7 +86,7 @@ func (t *ChainCodeVegetable) createProductLog(stub shim.ChaincodeStubInterface, 
 
 	//
 	if len(args) != 22 {
-		return shim.Error("Incorrect number of arguments. Expecting 20")
+		return shim.Error("Incorrect number of arguments. Expecting 22")
 	}
 
 	var TransactionID string
@@ -156,8 +155,8 @@ func (t *ChainCodeVegetable) updateProductFromTo(stub shim.ChaincodeStubInterfac
 	var err error
 
 	//
-	if len(args) != 24 {
-		return shim.Error("Incorrect number of arguments. Expecting 19")
+	if len(args) != 21 {
+		return shim.Error("Incorrect number of arguments. Expecting 21")
 	}
 
 	var Import Import
@@ -197,10 +196,19 @@ func (t *ChainCodeVegetable) updateProductFromTo(stub shim.ChaincodeStubInterfac
 	valueAsBytes, err := stub.GetState(CodeVegetable)
 	if err != nil {
 		return shim.Error("Failed to get result: " + err.Error())
-	} else if valueAsBytes != nil {
-		fmt.Println("This result already exists: " + CodeVegetable)
-		return shim.Error("This result already exists: " + CodeVegetable)
+	} else if valueAsBytes == nil {
+		fmt.Println("This result not already exists: " + CodeVegetable)
+		return shim.Error("This result not already exists: " + CodeVegetable)
 	}
+
+	resultOld := Vegetable{}
+	err = json.Unmarshal(valueAsBytes, &resultOld)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	Import = resultOld.Import
+	Export = resultOld.Export
 
 	// ==== Create product object and marshal to JSON ====
 	result := &Vegetable{TransactionID, CodeVegetable, Product, Import, ContainerFrom, ContainerTo,
@@ -225,7 +233,7 @@ func (t *ChainCodeVegetable) updateProductExport(stub shim.ChaincodeStubInterfac
 
 	//
 	if len(args) != 23 {
-		return shim.Error("Incorrect number of arguments. Expecting 21")
+		return shim.Error("Incorrect number of arguments. Expecting 23")
 	}
 
 	var Import Import
@@ -267,10 +275,19 @@ func (t *ChainCodeVegetable) updateProductExport(stub shim.ChaincodeStubInterfac
 	valueAsBytes, err := stub.GetState(CodeVegetable)
 	if err != nil {
 		return shim.Error("Failed to get result: " + err.Error())
-	} else if valueAsBytes != nil {
-		fmt.Println("This result already exists: " + CodeVegetable)
-		return shim.Error("This result already exists: " + CodeVegetable)
+	} else if valueAsBytes == nil {
+		fmt.Println("This result not already exists: " + CodeVegetable)
+		return shim.Error("This result not already exists: " + CodeVegetable)
 	}
+
+	resultOld := Vegetable{}
+	err = json.Unmarshal(valueAsBytes, &resultOld)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	Import = resultOld.Import
+	ContainerTo = resultOld.ContainerTo
 
 	// ==== Create product object and marshal to JSON ====
 	result := &Vegetable{TransactionID, CodeVegetable, Product, Import, ContainerFrom, ContainerTo,
@@ -369,4 +386,3 @@ func main() {
 		fmt.Printf("Error starting Simple chaincode: %s", err)
 	}
 }
-

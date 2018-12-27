@@ -52,7 +52,7 @@ sudo rm -rf driving-files/crypto-config/
 sudo rm -rf kafka/*
 rm setup-cluster/render/*
 
-PEERS=(172.31.33.147   172.31.40.239)
+PEERS=(172.31.39.152   172.31.38.202)
 for PEER in "${PEERS[@]}"; do
     ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm /data/driving-files/channel-artifacts/*'
     ssh -i ~/Hyperledger.pem ubuntu@$PEER 'sudo rm -rf /data/driving-files/crypto-config/'
@@ -64,7 +64,7 @@ echo "Remove chaincode containers"
 
 ./rm-chaincode.sh
 
-PEERS=(172.31.33.147   172.31.40.239)
+PEERS=(172.31.39.152   172.31.38.202)
 for PEER in "${PEERS[@]}"; do
     ssh -i ~/Hyperledger.pem ubuntu@$PEER < ./rm-chaincode.sh
 done

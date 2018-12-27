@@ -21,9 +21,9 @@ BASEDIR = os.path.dirname(__file__)
 ORDERER = os.path.join(BASEDIR, "../crypto-config/ordererOrganizations")
 PEER = os.path.join(BASEDIR, "../crypto-config/peerOrganizations")
 KAFKA = os.path.join(BASEDIR, "../crypto-config/kafka")
-NODE_1 = "ip-172-31-42-88"
-NODE_2 = "ip-172-31-41-42"
-NODE_3 = "ip-172-31-40-157"
+NODE_1 = "ip-172-31-44-159"
+NODE_2 = "ip-172-31-39-152"
+NODE_3 = "ip-172-31-38-202"
 
 def render(src, dest, **kw):
         # t = Template(open(src, 'r').read())
