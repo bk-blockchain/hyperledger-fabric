@@ -8,7 +8,7 @@
     },
     "dependencies": {
         "commander": "^2.16.0",
-        "express": "^4.16.3",
+        "express": "^4.18.2",
         "fabric-ca-client": "^1.2.1",
         "fabric-client": "^1.2.1",
         "grpc": "^1.6.0",
